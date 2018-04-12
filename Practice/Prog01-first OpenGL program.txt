@@ -1,0 +1,48 @@
+//
+//  main.cpp
+//  cgPractice
+//
+//  Created by 이준호 on 2018. 4. 10..
+//  Copyright © 2018년 Taristmas. All rights reserved.
+//
+
+#include <GLUT/GLUT.h>
+#include <iostream>
+void init();
+void display();
+
+
+using namespace std;
+
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    glutInit( &argc, (char**)argv);
+    glutInitWindowSize(500,500);
+    glutCreateWindow("Prog01 : first OpenGL program");
+    glutDisplayFunc(display);
+    init();
+    glutMainLoop();
+    
+   
+    return 0;
+}
+
+void init(){
+    glClearColor(1.0,1.0,1.0,1.0);          // 배경 색깔
+    glColor3f(1.0,0.0,0.0);                 // 도형 색깔
+    gluOrtho2D(0.0,50.0,0.0,50.0);          // left, right, 부터 bottom, top 보겠다.
+}
+
+void display(){
+    glClear(GL_COLOR_BUFFER_BIT);           // 얘가 실제로 컬러버퍼를 glClearColor 로 정한 색으로 채움
+    glBegin(GL_POINTS);                     // 모드설정
+    
+    for(double f=10; f<40 ;f+=0.1){
+        glVertex2f(f,10); glVertex2f(f,40);
+        glVertex2f(10,f); glVertex2f(40,f);
+        
+    }
+    glEnd();
+    glFlush();                              // glCommand buffer에 있는 명령어들 비우고 즉시실행.
+//    glFinish();                           // glCommand 완벽히 실행되기를 보장해야하는 경우 사용
+}

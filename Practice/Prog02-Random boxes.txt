@@ -1,0 +1,60 @@
+//
+//  main.cpp
+//  cgPractice
+//
+//  Created by 이준호 on 2018. 4. 10..
+//  Copyright © 2018년 Taristmas. All rights reserved.
+//
+
+#include <GLUT/GLUT.h>
+#include <iostream>
+void init();
+void display();
+void timer(int t);
+
+
+using namespace std;
+
+static int delay = 500;                     //milliseconds
+
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    glutInit( &argc, (char**)argv);
+    glutInitWindowSize(500,500);
+    glutCreateWindow("Prog02 : Random boxes");
+    glutDisplayFunc(display);
+    glutTimerFunc(delay,timer,0);           // set timer function which is called for each delay (ms)
+    init();
+    glutMainLoop();
+    
+   
+    return 0;
+}
+
+void timer(int t){
+    glutPostRedisplay();                    // 현재 윈도우 새로고침
+    glutTimerFunc(delay, timer, t);         // 타이머 재설정
+}
+
+void init(){
+    srand(time(0));
+    glClearColor(1.0,1.0,1.0,1.0);          // 배경 색깔
+    gluOrtho2D(0.0,50.0,0.0,50.0);          // left, right, 부터 bottom, top 보겠다.
+    glClear(GL_COLOR_BUFFER_BIT);           // 배경 초기화
+}
+
+void display(){
+    int x1,x2,y1,y2,r,g,b;
+    x1=rand()%50; y1=rand()%50; x2=rand()%50; y2=rand()%50;
+    r=rand()%256; g=rand()%256; b=rand()%256;
+    
+    glColor3f((GLfloat)r/255, (GLfloat)g/255, (GLfloat)b/255);
+    
+    glBegin(GL_POLYGON);                     // 모드설정 다각형
+    glVertex2f(x1,y1); glVertex2f(x1,y2);
+    glVertex2f(x2,y1); glVertex2f(x2,y2);
+    
+    glEnd();
+    glFlush();                              // glCommand buffer에 있는 명령어들 비우고 즉시실행.
+//    glFinish();                           // glCommand 완벽히 실행되기를 보장해야하는 경우 사용
+}

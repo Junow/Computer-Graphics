@@ -1,0 +1,113 @@
+//
+//  main.cpp
+//  cgPractice
+//
+//  Created by 이준호 on 2018. 4. 10..
+//  Copyright © 2018년 Taristmas. All rights reserved.
+//
+
+#include <GLUT/GLUT.h>
+#include <iostream>
+#include <stdlib.h>
+#include <math.h>
+
+#define PI 3.141592
+static int delay =10;                     //milliseconds
+
+
+GLfloat v[8][3] = {{15,15,35}, {35,15,35}, {35,35,35}, {15,35,35}, {40,20,15}, {20,20,15}, {40,40,15}, {20,40,15}};
+GLfloat v2[8][3] = {{15,15,35}, {35,15,35}, {35,35,35}, {15,35,35}, {40,20,15}, {20,20,15}, {40,40,15}, {20,40,15}};
+GLfloat s=1.0;
+GLfloat inc=0.01;
+GLfloat theta=0;
+GLfloat rad = PI/180;
+void timer(int t){
+    glutPostRedisplay();                    // 현재 윈도우 새로고침
+    glutTimerFunc(delay, timer, t);         // 타이머 재설정
+    theta+=1;
+}
+
+void init()
+{
+    glClearColor( 1.0, 1.0, 1.0, 1.0 );
+    glOrtho ( -30.0, 30.0, -30.0, 30.0, -30.0, 30.0 );    // define 3D clipping volume
+    glEnable ( GL_DEPTH_TEST );                                 // 나로부터 깊이가 얼마인지 따져봄
+    
+    for(int i=0;i<8;i++){
+        for(int j=0;j<3;j++){
+            v2[i][j]-=25;
+        }
+    }
+    
+}
+
+void display()
+{
+    //    GLfloat v0[3] = { 15, 15, 35 }, v1[3] = { 35, 15, 35 }, v2[3] = { 35, 35, 35 }, v3[3] = { 15, 35, 35 };
+    //    GLfloat v4[3] = { 40, 20, 15 }, v5[3] = { 20, 20, 15 }, v6[3] = { 40, 40, 15 }, v7[3] = { 20, 40, 15 };
+    //    glClear(GL_COLOR_BUFFER_BIT); // 얘가 실제로 컬러버퍼를 glClearColor 로 정한 색으로 채움
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // add GL_DEPTH_BUFFER_BIT
+    theta*=rad;
+    
+    for(int i=0;i<8;i++){
+        GLfloat x = v2[i][0];
+        GLfloat z = v2[i][2];
+        v2[i][0]=(cos(theta)*x + sin(theta)*z);
+        v2[i][2]=(-1*sin(theta)*x + cos(theta)*z);
+    }
+    
+    for(int i=0;i<8;i++){
+        for(int j=0;j<3;j++){
+            v[i][j]=v2[i][j]*s;
+        }
+    }
+    s+=inc;
+    if(s>1.0 || s<0.1){
+        s-=inc;
+        inc*=-1;
+    }
+    
+    printf("test %f\n", s);
+    
+    glColor3f( 1.0, 0.0, 0.0 );
+    glBegin( GL_POLYGON );
+    glVertex3fv(v[0]); glVertex3fv(v[1]); glVertex3fv(v[2]); glVertex3fv(v[3]); // 앞면
+    glEnd();
+    glColor3f( 0.0, 1.0, 0.0 );
+    glBegin( GL_POLYGON );
+    glVertex3fv(v[0]); glVertex3fv(v[1]); glVertex3fv(v[4]); glVertex3fv(v[5]); // 아랫면
+    glEnd();
+    glColor3f( 0.0, 0.0, 1.0 );
+    glBegin( GL_POLYGON );
+    glVertex3fv(v[5]); glVertex3fv(v[4]); glVertex3fv(v[6]); glVertex3fv(v[7]); // 뒷면
+    glEnd();
+    glColor3f( 1.0, 1.0, 0.0 );
+    glBegin( GL_POLYGON );
+    glVertex3fv(v[7]); glVertex3fv(v[6]); glVertex3fv(v[2]); glVertex3fv(v[3]); // 윗면
+    glEnd();
+    glColor3f(0.0,1.0,1.0);
+    glBegin(GL_POLYGON);
+    glVertex3fv(v[0]); glVertex3fv(v[5]); glVertex3fv(v[7]); glVertex3fv(v[3]); // 왼쪽
+    glEnd();
+    glColor3f(0.0,1.0,1.0);
+    glBegin(GL_POLYGON);
+    glVertex3fv(v[1]); glVertex3fv(v[4]); glVertex3fv(v[6]); glVertex3fv(v[2]); // 오른쪽
+    glEnd();
+    
+    glFlush();
+}
+
+int main(int argc, char* argv[])
+{
+    glutInit(&argc, argv);
+    glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH ); // add display mode to enable depth test
+    glutInitWindowSize(500, 500);
+    glutCreateWindow("Prog12: center of rotation");
+    glutDisplayFunc(display);
+    glutTimerFunc(delay,timer,0);
+    init();
+    glutMainLoop();
+    
+    return 0;
+}
+

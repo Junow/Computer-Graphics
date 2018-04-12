@@ -1,0 +1,65 @@
+//
+//  main.cpp
+//  cgPractice
+//
+//  Created by 이준호 on 2018. 4. 10..
+//  Copyright © 2018년 Taristmas. All rights reserved.
+//
+
+#include <GLUT/GLUT.h>
+#include <iostream>
+void init();
+void display();
+void timer(int t);
+
+
+using namespace std;
+
+static int delay = 0.001;                     //milliseconds
+float x,y,xinc,yinc;
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    glutInit( &argc, (char**)argv);
+    glutInitWindowSize(500,500);
+    glutCreateWindow("Prog03 : Bouncing Pixel");
+    glutDisplayFunc(display);
+    glutTimerFunc(delay,timer,0);           // set timer function which is called for each delay (ms)
+    init();
+    glutMainLoop();
+    
+   
+    return 0;
+}
+
+void timer(int t){
+    glutPostRedisplay();                    // 현재 윈도우 새로고침
+    glutTimerFunc(delay, timer, t);         // 타이머 재설정
+}
+
+void init(){
+    
+    glClearColor(1.0,1.0,1.0,1.0);          // 배경 색깔
+    glClear(GL_COLOR_BUFFER_BIT);           // 배경 초기화
+    gluOrtho2D(0.0,50.0,0.0,50.0);          // left, right, 부터 bottom, top 보겠다.
+    srand(time(0));
+    x=rand()%50; y=rand()%50;
+    xinc=(float)((rand()%50)-25)/250;
+    yinc=(float)((rand()%50)-25)/250;
+    cout<<xinc << " " << yinc <<endl;
+}
+
+void display(){
+    glColor3f(x/50, y/50, 0);
+    
+    glBegin(GL_POINTS);                     // 모드설정 다각형
+    glVertex2f(x,y);
+    glEnd();
+    glFlush();                              // glCommand buffer에 있는 명령어들 비우고 즉시실행.
+    //    glFinish();                           // glCommand 완벽히 실행되기를 보장해야하는 경우 사용
+    
+
+    x+=xinc; y+=yinc;
+    if(x>50 || x<0) {x-=xinc; xinc*=-1;}
+    if(y>50 || y<0) {y-=yinc; yinc*=-1;}
+    
+}

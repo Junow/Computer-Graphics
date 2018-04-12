@@ -1,0 +1,84 @@
+//
+//  main.cpp
+//  cgPractice
+//
+//  Created by 이준호 on 2018. 4. 10..
+//  Copyright © 2018년 Taristmas. All rights reserved.
+//
+
+#include <GLUT/GLUT.h>
+#include <iostream>
+#include <math.h>
+
+static double theta    = 0;
+static double thetainc = 5;
+static int    delay    = 100;
+
+void timer(int t){
+    glutPostRedisplay();                    // 현재 윈도우 새로고침
+    glutTimerFunc(delay, timer, t);         // 타이머 재설정
+    
+    theta+=thetainc;
+    if ( theta<=0 || theta>80 )
+    {
+        theta -= thetainc;
+        thetainc = -thetainc;
+    }
+}
+
+void init()
+{
+    glClearColor (1.0, 1.0, 1.0, 1.0);
+    glColor3f    (1.0, 0.0, 0.0);
+    glOrtho(0.0, 416.0, 0.0, 240.0, -500.0, 500.0); // define 3D clipping volume
+    glPointSize(8);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+    
+
+}
+
+void display()
+{
+    static unsigned char buff[240][416];
+    
+    FILE * fp = fopen("testo.y", "rb");
+    fread(buff,416*240, sizeof(char), fp);
+    fclose(fp);
+    glClear(GL_COLOR_BUFFER_BIT); // 얘가 실제로 컬러버퍼를 glClearColor 로 정한 색으로 채움
+    
+    glBegin(GL_POINTS);
+    double PI = atan(1.0)*4.0;                              // 파이 값
+    double rad  = PI/180.0;                                 // 라디안값
+    for(int y=0;y<240;y++){
+        for(int x=0;x<416;x++){
+            GLfloat c  = (GLfloat)buff[y][x]/255;           // 색
+            GLfloat z  = (GLfloat)x*sin(theta*rad);
+            GLfloat xp = (GLfloat)x*cos(theta*rad);
+            GLfloat yp = 239-(GLfloat)y;
+            
+            glColor3f (c,c,c);
+            glVertex3f(xp,yp,z);
+        }
+    }
+    
+    glEnd();
+    
+    glFlush();
+}
+
+int main(int argc, char* argv[])
+{
+
+    glutInit(&argc, argv);
+    glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB ); // add display mode to enable depth test
+    glutInitWindowSize(500, 500);
+    glutCreateWindow("Prog10: Image in 3D");
+    glutDisplayFunc(display);
+    glutTimerFunc(delay,timer,0);
+    init();
+    glutMainLoop();
+    
+    return 0;
+}
